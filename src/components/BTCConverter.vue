@@ -204,14 +204,4 @@ export default {
     }
 
     input[type=number] { -moz-appearance:textfield; }
-
-    .row .no-float {
-        display: table-cell;
-        float: none;
-    }
-
-    .row {
-        height: 100%;
-        display: table-row;
-    }
 </style>
