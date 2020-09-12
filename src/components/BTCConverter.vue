@@ -21,9 +21,9 @@
                     <v-card-text>
                         Tasa del BTC al día de : {{timestamp}}
                         <br>
-                        1 BTC = {{btcObject.USD.rate_float}} USD
+                        1 BTC = {{Intl.NumberFormat("de-DE").format(btcObject.USD.rate_float)}} USD
                         <br>
-                        1 USD = {{usdObject.localbitcoin_ref}} Bs
+                        1 USD = {{Intl.NumberFormat("de-DE").format(usdObject.localbitcoin_ref)}} Bs
                     </v-card-text>
                     <v-form
                         class="mx-5 pb-5"
@@ -138,7 +138,6 @@ export default {
                 (response) => {
                     this.usdObject = response.data.USD;
                     this.loadingUSD = true;
-                    console.log(this.usdObject);
                 }
             )
         },
@@ -147,7 +146,6 @@ export default {
                 (response) => {
                     this.btcObject = response.data.bpi;
                     this.loadingBTC = true;
-                    console.log(this.btcObject);
                 }
             )
         },
