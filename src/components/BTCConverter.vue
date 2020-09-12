@@ -1,8 +1,17 @@
 <template>
   <v-main>
     <menu-superior></menu-superior>
-    <v-container>
-        <v-row>
+    <section class="text-center">
+        <v-overlay  v-if="loadingUSD == false && loadingBTC == false">
+             <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+            ></v-progress-circular>
+        </v-overlay>
+    </section>
+    <v-container class="h-100">
+        <v-row class="h-100">
             <v-col
                 offset-lg="4"
                 offset-md="4"
@@ -195,4 +204,14 @@ export default {
     }
 
     input[type=number] { -moz-appearance:textfield; }
+
+    .row .no-float {
+        display: table-cell;
+        float: none;
+    }
+
+    .row {
+        height: 100%;
+        display: table-row;
+    }
 </style>
