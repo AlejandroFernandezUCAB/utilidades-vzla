@@ -8,8 +8,19 @@
                 lg="4"
                 xl="4"
             >
-                <v-card>
-                    <v-card-title>Convertidor BTC a Bs</v-card-title>
+                <v-card
+                    v-if="loadingUSD == true && loadingBTC == true"
+                >
+                    <v-card-title>
+                        Convertidor BTC a Bs
+                    </v-card-title>
+                    <v-card-text>
+                        Precio del BTC al día de : {{timestamp}}
+                        <br>
+                        1 BTC = {{btcObject.USD.rate_float}} USD
+                        <br>
+                        1 USD = {{usdObject.localbitcoin_ref}} Bs
+                    </v-card-text>
                     <v-form
                         class="mx-5 pb-5"
                         ref="form"
@@ -17,58 +28,25 @@
                         lazy-validation
                     >
                         <v-text-field
-                            v-model="name"
-                            :counter="10"
+                            v-model="btc"
                             :rules="nameRules"
                             label="BTC"
                             required
                         ></v-text-field>
-
                         <v-text-field
-                            v-model="email"
-                            :rules="emailRules"
-                            label="E-mail"
+                            v-model="usd"
+                            :rules="nameRules"
+                            label="USD"
+                            required
+                            disabled
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="bs"
+                            :rules="nameRules"
+                            label="Bs"
+                            disabled
                             required
                         ></v-text-field>
-
-                        <v-select
-                            v-model="select"
-                            :items="items"
-                            :rules="[v => !!v || 'Item is required']"
-                            label="Item"
-                            required
-                         ></v-select>
-
-                        <v-checkbox
-                            v-model="checkbox"
-                            :rules="[v => !!v || 'You must agree to continue!']"
-                            label="Do you agree?"
-                            required
-                        ></v-checkbox>
-
-                        <v-btn
-                            :disabled="!valid"
-                            color="success"
-                            class="mr-4"
-                            @click="validate"
-                        >
-                            Validate
-                        </v-btn>
-
-                        <v-btn
-                            color="error"
-                            class="mr-4"
-                            @click="reset"
-                        >
-                            Reset Form
-                        </v-btn>
-
-                        <v-btn
-                            color="warning"
-                            @click="resetValidation"
-                        >
-                            Reset Validation
-                        </v-btn>
                     </v-form>
                 </v-card>
             </v-col>
@@ -80,44 +58,91 @@
 <script>
 // @ is an alias to /src
 import MenuSuperior from '@/components/MenuSuperior.vue'
+import axios from "axios"
 
 export default {
-  name: 'Home',
-  components: {
-    MenuSuperior
-  },
-      data: () => ({
-      valid: true,
-      name: '',
-      nameRules: [
+
+    name: 'Home',
+    components: {
+        MenuSuperior
+    },
+    mounted(){
+        this.getNow();
+        this.obtenerPrecioBTC();
+        this.obtenerPrecioUSD();
+
+    },
+    data: () => ({
+        btc:0,
+        usd:0,
+        bs:0,
+        loadingBTC:false,
+        loadingUSD:false,
+        btcObject:{},
+        usdObject:{},
+        valid: true,
+        name: '',
+        nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length <= 10) || 'Name must be less than 10 characters',
-      ],
-      email: '',
-      emailRules: [
+        ],
+        email: '',
+        emailRules: [
         v => !!v || 'E-mail is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-      ],
-      select: null,
-      items: [
+        ],
+        select: null,
+        items: [
         'Item 1',
         'Item 2',
         'Item 3',
         'Item 4',
-      ],
-      checkbox: false,
+        ],
+        checkbox: false,
+        timestamp:""
     }),
 
     methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
+        validate () {
+            this.$refs.form.validate()
+        },
+        reset () {
+            this.$refs.form.reset()
+        },
+        resetValidation () {
+            this.$refs.form.resetValidation()
+        },
+        obtenerPrecioUSD(){
+            axios.get('https://s3.amazonaws.com/dolartoday/data.json').then(
+                (response) => {
+                    this.usdObject = response.data.USD;
+                    this.loadingUSD = true;
+                    console.log(this.usdObject);
+                }
+            )
+        },
+        obtenerPrecioBTC(){
+            axios.get('https://api.coindesk.com/v1/bpi/currentprice.json').then(
+                (response) => {
+                    this.btcObject = response.data.bpi;
+                    this.loadingBTC = true;
+                    console.log(this.btcObject);
+                }
+            )
+        },
+        getNow() {
+            const today = new Date();
+            const date = today.getDate()+"-"+(today.getMonth()+1)+"-"+today.getFullYear();
+              var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var time = hours + ':' + minutes + ' ' + ampm;
+            const dateTime = date +' '+ time;
+            this.timestamp = dateTime;
+        }
     },
 }
 </script>
