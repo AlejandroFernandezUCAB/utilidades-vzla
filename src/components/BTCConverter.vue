@@ -10,8 +10,8 @@
             ></v-progress-circular>
         </v-overlay>
     </section>
-    <v-container class="h-100">
-        <v-row class="h-100">
+    <v-container>
+        <v-row>
             <v-col
                 offset-lg="4"
                 offset-md="4"
