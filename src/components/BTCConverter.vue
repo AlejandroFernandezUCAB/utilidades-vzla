@@ -1,13 +1,14 @@
 <template>
-  <v-content>
+  <v-main>
     <menu-superior></menu-superior>
     <v-container>
         <v-row>
             <v-col
                 offset-lg="4"
                 offset-md="4"
+                offset-sm="3"
                 col="4"
-                sm="4"
+                sm="6"
                 md="4"
                 lg="4"
                 xl="4"
@@ -37,18 +38,23 @@
                             label="BTC"
                             required
                             type="number"
+                            v-on:keyup="switchera('BTC')"
                         ></v-text-field>
                         <v-text-field
                             v-model="usd"
                             label="USD"
                             required
-                            disabled
+                            value="usd"
+                            type="number"
+                            v-on:keyup="switchera('USD')"
                         ></v-text-field>
                         <v-text-field
                             v-model="bs"
                             label="Bs"
-                            disabled
+                            value="bs"
                             required
+                            type="number"
+                            v-on:keyup="switchera('Bs')"
                         ></v-text-field>
                     </v-form>
                     <v-card-subtitle>
@@ -58,7 +64,7 @@
             </v-col>
         </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
@@ -73,14 +79,6 @@ export default {
         MenuSuperior
     },
     watch:{
-        btc( nuevoValor ){
-            this.usd = this.btcObject.USD.rate_float * nuevoValor;
-            this.bs = this.usdObject.localbitcoin_ref * this.usd;
-            this.usd = this.usd.toFixed(2);
-            this.bs = this.bs.toFixed(2);
-            this.usd = Intl.NumberFormat("de-DE").format(this.usd);
-            this.bs = Intl.NumberFormat("de-DE").format(this.bs);
-        },
         $route: {
             immediate: true,
             handler(to) {
@@ -95,6 +93,9 @@ export default {
 
     },
     data: () => ({
+        btcSwitch:false,
+        bsSwitch:false,
+        usdSwitch:false,
         btc:0,
         usd:0,
         bs:0,
@@ -161,7 +162,40 @@ export default {
             var time = hours + ':' + minutes + ' ' + ampm;
             const dateTime = date +' '+ time;
             this.timestamp = dateTime;
-        }
+        },
+        switchera( caso ){
+            switch (caso) {
+                case "BTC":
+                        this.usd = this.btcObject.USD.rate_float * this.btc;
+                        this.bs = this.usdObject.localbitcoin_ref * this.usd;
+                        this.usd = this.usd.toFixed(2);
+                        this.bs = this.bs.toFixed(2);
+                    break;
+                case "USD":
+                        this.btc = this.usd/this.btcObject.USD.rate_float;
+                        this.bs = this.usdObject.localbitcoin_ref * this.usd;
+                        this.bs = this.bs.toFixed(2);                
+                    break;
+                case "Bs":
+                        this.usd = this.bs/this.usdObject.localbitcoin_ref;
+                        this.btc = this.usd/this.btcObject.USD.rate_float;
+                        this.usd = this.usd.toFixed(2);
+                    break;           
+                default:
+                    break;
+            }
+
+        },
     },
 }
 </script>
+
+<style>
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+    }
+
+    input[type=number] { -moz-appearance:textfield; }
+</style>

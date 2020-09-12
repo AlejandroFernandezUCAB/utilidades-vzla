@@ -1,7 +1,7 @@
 <template>
-  <v-content fluid>
+  <v-main fluid>
     <menu-superior></menu-superior>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
