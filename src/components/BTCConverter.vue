@@ -4,7 +4,11 @@
     <v-container>
         <v-row>
             <v-col
-                offset="4"
+                offset-lg="4"
+                offset-md="4"
+                col="4"
+                sm="4"
+                md="4"
                 lg="4"
                 xl="4"
             >
@@ -15,7 +19,7 @@
                         Convertidor BTC a Bs
                     </v-card-title>
                     <v-card-text>
-                        Precio del BTC al día de : {{timestamp}}
+                        Tasa del BTC al día de : {{timestamp}}
                         <br>
                         1 BTC = {{btcObject.USD.rate_float}} USD
                         <br>
@@ -29,25 +33,27 @@
                     >
                         <v-text-field
                             v-model="btc"
-                            :rules="nameRules"
+                            :rules="numericRules"
                             label="BTC"
                             required
+                            type="number"
                         ></v-text-field>
                         <v-text-field
                             v-model="usd"
-                            :rules="nameRules"
                             label="USD"
                             required
                             disabled
                         ></v-text-field>
                         <v-text-field
                             v-model="bs"
-                            :rules="nameRules"
                             label="Bs"
                             disabled
                             required
                         ></v-text-field>
                     </v-form>
+                    <v-card-subtitle>
+                        Las tasas de cambio fueron obtenidas de las apis de <a href="https://api.coindesk.com/v1/bpi/currentprice.json">Coindesk</a> y <a href="https://s3.amazonaws.com/dolartoday/data.json">DolarToday</a>
+                    </v-card-subtitle>
                 </v-card>
             </v-col>
         </v-row>
@@ -66,6 +72,22 @@ export default {
     components: {
         MenuSuperior
     },
+    watch:{
+        btc( nuevoValor ){
+            this.usd = this.btcObject.USD.rate_float * nuevoValor;
+            this.bs = this.usdObject.localbitcoin_ref * this.usd;
+            this.usd = this.usd.toFixed(2);
+            this.bs = this.bs.toFixed(2);
+            this.usd = Intl.NumberFormat("de-DE").format(this.usd);
+            this.bs = Intl.NumberFormat("de-DE").format(this.bs);
+        },
+        $route: {
+            immediate: true,
+            handler(to) {
+                document.title = to.meta.title || 'Some Default Title';
+            }
+        },
+    },
     mounted(){
         this.getNow();
         this.obtenerPrecioBTC();
@@ -82,9 +104,8 @@ export default {
         usdObject:{},
         valid: true,
         name: '',
-        nameRules: [
-        v => !!v || 'Name is required',
-        v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+        numericRules: [
+        v => !!v || 'Este campo es requerido',
         ],
         email: '',
         emailRules: [
