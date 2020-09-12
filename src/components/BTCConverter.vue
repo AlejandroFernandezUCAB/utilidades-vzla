@@ -34,7 +34,6 @@
                     >
                         <v-text-field
                             v-model="btc"
-                            :rules="numericRules"
                             label="BTC"
                             required
                             type="number"
@@ -44,14 +43,12 @@
                             v-model="usd"
                             label="USD"
                             required
-                            value="usd"
                             type="number"
                             v-on:keyup="switchera('USD')"
                         ></v-text-field>
                         <v-text-field
                             v-model="bs"
                             label="Bs"
-                            value="bs"
                             required
                             type="number"
                             v-on:keyup="switchera('Bs')"
